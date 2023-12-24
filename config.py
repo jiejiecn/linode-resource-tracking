@@ -1,5 +1,5 @@
 # Personal Access Token
-linode_token = ''
+linode_token = 'd15af4ae95aa00ac688bd11ea2946386ac9b172d324c8f8a7f4dec54f8c86431'
 
 
 # Refresh Invertal, seconds

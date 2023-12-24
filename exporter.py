@@ -46,6 +46,8 @@ def GetInstances():
 
         if page == pages:
             break
+        else:
+            page += 1
     
     return instances
 
@@ -77,6 +79,8 @@ def GetNodeBalancers():
 
         if page == pages:
             break
+        else:
+            page += 1
     
     return instances
 
@@ -108,6 +112,8 @@ def GetVolumes():
 
         if page == pages:
             break
+        else:
+            page += 1
     
     return instances
 
