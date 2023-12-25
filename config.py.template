@@ -1,7 +1,6 @@
 # Personal Access Token
-# linode_token = 'd15af4ae95aa00ac688bd11ea2946386ac9b172d324c8f8a7f4dec54f8c86431'
-# MobiVista Token
-linode_token = '53c33a4961926b35799cde7131bbd5b2acaf84130a6b72bfde89c67f149c3bed'
+linode_token = ''
+
 
 # Refresh Invertal, seconds
 interval = 30

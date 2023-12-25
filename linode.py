@@ -127,6 +127,19 @@ def GetNetworkTransfer():
     
     return data
 
+def GetLinodeTypes():
+    url = config.instance_type_url
+
+    resp = requests.get(url, headers=headers)
+    #print(page, resp.status_code)
+    data = json.loads(resp.text)
+
+    instance_type = dict()
+    for item in data['data']:
+        type_id = item['id']
+        instance_type[type_id] = float(item['price']['hourly'])
+    
+    return instance_type
 
     
 
@@ -140,7 +153,9 @@ if __name__ == '__main__':
     linodeInstanceStatusCount = Gauge("linode_instance_status_count", "Linode Instances Statistic", ["status"])
     linodeNodebalancerCount = Gauge("linode_nodebalancer_count", "Linode NodeBalancer Statistic", [])
     linodeVolumesCount = Gauge("linode_volumes_count", "Linode Block Storage Statistic", ["status"])
+    linodeVolumesSize = Gauge("linode_volumes_size", "Linode Block Storage Total GB", ["size"])
     linodeTrafficQuota = Gauge("linode_traffice_quota", "Linode Traffic Quota & Usage", ["type"])
+    linodeEstimateCost = Gauge("linode_estimate_cost", "Linode Hourly Cost Estimated", ["type"])
     
 
     inteval = config.interval
@@ -158,11 +173,13 @@ if __name__ == '__main__':
             instance_count = dict()
             instance_running = 0
             instance_notrunning = 0
+
             
             nodebalancer_count = 0
             
             volume_active = 0
             volume_inactive = 0
+            volume_total = 0
 
             network_transfer_quota = 0
             network_transfer_usage = 0
@@ -188,6 +205,7 @@ if __name__ == '__main__':
 
             volumes = GetVolumes()
             for item in volumes:
+                volume_total += int(item['size'])
                 if item['linode_id'] is not None:
                     volume_active += 1
                 else:
@@ -198,10 +216,10 @@ if __name__ == '__main__':
             network_transfer_quota = network_transfer['quota']
             
 
-            print(instance_count)
-            print(nodebalancers)
-            print(volumes)
-            print(network_transfer)
+            # print(instance_count)
+            # print(nodebalancers)
+            # print(volumes)
+            # print(network_transfer)
 
 
 
@@ -212,9 +230,27 @@ if __name__ == '__main__':
 
             linodeVolumesCount.labels('attached').set(volume_active)
             linodeVolumesCount.labels('unattached').set(volume_inactive)
+            linodeVolumesSize.labels('size').set(volume_total)
 
             linodeTrafficQuota.labels('used').set(network_transfer_usage)
             linodeTrafficQuota.labels('quota').set(network_transfer_quota)
+
+            # Estimated Hourly Price for NodeBalance & Block Storage
+            nodeBalanceTotal = nodebalancer_count * config.nodeBalancePrice
+            volumeTotal = volume_total * config.storagePrice
+            
+            # Estimated Hourly Price for Linode Instances
+            instance_types = GetLinodeTypes()
+            print(instance_types)
+            instance_total = 0
+            for k,v in instance_count.items():
+                instance_total += v * instance_types[k]
+                
+            linodeEstimateCost.labels('nodebalance').set(nodeBalanceTotal)
+            linodeEstimateCost.labels('blockstorage').set(volumeTotal)
+            linodeEstimateCost.labels('instance').set(instance_total)
+
+            print(instance_total, nodeBalanceTotal, volume_total)
 
             print("Refresh OK")
             time.sleep(inteval)
