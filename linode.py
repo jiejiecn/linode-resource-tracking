@@ -241,7 +241,7 @@ if __name__ == '__main__':
             
             # Estimated Hourly Price for Linode Instances
             instance_types = GetLinodeTypes()
-            print(instance_types)
+            # print(instance_types)
             instance_total = 0
             for k,v in instance_count.items():
                 instance_total += v * instance_types[k]

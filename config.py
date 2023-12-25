@@ -5,7 +5,7 @@ linode_token = '53c33a4961926b35799cde7131bbd5b2acaf84130a6b72bfde89c67f149c3bed
 
 # Refresh Invertal, seconds
 interval = 30
-pagesize = 200
+pagesize = 50
 
 
 #  Exporter Port      
