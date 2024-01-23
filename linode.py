@@ -137,10 +137,22 @@ def GetLinodeTypes():
     instance_type = dict()
     for item in data['data']:
         type_id = item['id']
+
         instance_type[type_id] = float(item['price']['hourly'])
     
     return instance_type
 
+def GetTagValue(tag: str):
+    values = tag.split('=')
+    if len(values) == 2:
+        k = values[0].lower()
+        v = values[1]
+    else:
+        k = None
+        v = None
+    
+    return k, v
+    
     
 
 
@@ -149,6 +161,7 @@ if __name__ == '__main__':
     hostAddr = config.hostAddr
     start_http_server(port=hostPort, addr=hostAddr)
 
+    linodeInstanceDetail = Gauge("linode_instance_detail", "Linode Instance Detail Info", ["region", "type", "id", "label", "status", "tag_group", "tag_team", "tag_name"])
     linodeInstanceTypeCount = Gauge("linode_instance_type_count", "Linode Instances Statistic", ["type"])
     linodeInstanceStatusCount = Gauge("linode_instance_status_count", "Linode Instances Statistic", ["status"])
     linodeNodebalancerCount = Gauge("linode_nodebalancer_count", "Linode NodeBalancer Statistic", [])
@@ -185,8 +198,29 @@ if __name__ == '__main__':
             network_transfer_usage = 0
 
             instances = GetInstances()
+            
             for instance in instances:
+
+                instance_group = None
+                instance_name = None
+                instance_team = None
                 instance_type = instance['type']
+
+                for tag in instance['tags']:
+                    k,v = GetTagValue(tag)
+                    if k == 'group':
+                        instance_group = v
+                    
+                    if k == 'name':
+                        instance_name = v
+                    
+                    if k == 'team':
+                        instance_team = v
+
+                        
+                linodeInstanceDetail.labels(instance['region'], instance['type'], instance['id'], instance['label'], instance['status'], instance_group, instance_team, instance_name).set(1)
+
+                
                 if instance_type in instance_count.keys():
                     instance_count[instance_type] += 1
                 else:
