@@ -85,6 +85,21 @@ def GetNodeBalancers():
     return instances
 
 
+def GetLKEs():
+    url = config.lke_url
+
+    resp = requests.get(url, headers=headers)
+    #print(page, resp.status_code)
+    data = json.loads(resp.text)
+
+    lkes = []
+    for item in data['data']:
+        lkes.append(item)
+    
+    return lkes
+
+
+
 def GetVolumes():
     url = config.volumes_url
 
@@ -169,6 +184,7 @@ if __name__ == '__main__':
     linodeVolumesSize = Gauge("linode_volumes_size", "Linode Block Storage Total GB", ["size"])
     linodeTrafficQuota = Gauge("linode_traffice_quota", "Linode Traffic Quota & Usage", ["type"])
     linodeEstimateCost = Gauge("linode_estimate_cost", "Linode Hourly Cost Estimated", ["type"])
+    linodeKubernetesDetail = Gauge("linode_kubernetes_engine", "Linode Kubernetes Cluster Info", ["id", "region", "label", "version"])
     
 
     inteval = config.interval
@@ -181,6 +197,7 @@ if __name__ == '__main__':
         linodeVolumesCount.clear()
         linodeTrafficQuota.clear()
         linodeInstanceDetail.clear()
+        linodeKubernetesDetail.clear()
 
 
         try:
@@ -190,6 +207,9 @@ if __name__ == '__main__':
 
             
             nodebalancer_count = 0
+
+            lke_count = 0
+            lke_estimate_cost = 0
             
             volume_active = 0
             volume_inactive = 0
@@ -199,7 +219,6 @@ if __name__ == '__main__':
             network_transfer_usage = 0
 
             instances = GetInstances()
-            
             for instance in instances:
 
                 instance_group = None
@@ -238,6 +257,16 @@ if __name__ == '__main__':
             nodebalancers = GetNodeBalancers()
             nodebalancer_count = len(nodebalancers)
 
+            lkes = GetLKEs()
+            for lke in lkes:
+                if lke['control_plane']['high_availability'] == True:
+                    lke_estimate_cost += config.lkeHAPrice
+                
+                lke_count += 1
+                linodeKubernetesDetail.labels(lke['id'], lke['region'], lke['label'], lke['k8s_version']).set(1)
+                    
+
+
             volumes = GetVolumes()
             for item in volumes:
                 volume_total += int(item['size'])
@@ -255,8 +284,6 @@ if __name__ == '__main__':
             # print(nodebalancers)
             # print(volumes)
             # print(network_transfer)
-
-
 
             linodeInstanceStatusCount.labels('running').set(instance_running)
             linodeInstanceStatusCount.labels('notrunning').set(instance_notrunning)
@@ -284,8 +311,9 @@ if __name__ == '__main__':
             linodeEstimateCost.labels('nodebalance').set(nodeBalanceTotal)
             linodeEstimateCost.labels('blockstorage').set(volumeTotal)
             linodeEstimateCost.labels('instance').set(instance_total)
+            linodeEstimateCost.labels('kubernetes').set(lke_estimate_cost)
 
-            print(instance_total, nodeBalanceTotal, volume_total)
+            #print(instance_total, nodeBalanceTotal, volume_total, lke_estimate_cost)
 
             print("Refresh OK")
             time.sleep(inteval)
