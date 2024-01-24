@@ -164,7 +164,7 @@ if __name__ == '__main__':
     linodeInstanceDetail = Gauge("linode_instance_detail", "Linode Instance Detail Info", ["region", "type", "id", "label", "status", "tag_group", "tag_team", "tag_name"])
     linodeInstanceTypeCount = Gauge("linode_instance_type_count", "Linode Instances Statistic", ["type"])
     linodeInstanceStatusCount = Gauge("linode_instance_status_count", "Linode Instances Statistic", ["status"])
-    linodeNodebalancerCount = Gauge("linode_nodebalancer_count", "Linode NodeBalancer Statistic", [])
+    linodeNodebalancerCount = Gauge("linode_nodebalancer_count", "Linode NodeBalancer Statistic", ["region"])
     linodeVolumesCount = Gauge("linode_volumes_count", "Linode Block Storage Statistic", ["status"])
     linodeVolumesSize = Gauge("linode_volumes_size", "Linode Block Storage Total GB", ["size"])
     linodeTrafficQuota = Gauge("linode_traffice_quota", "Linode Traffic Quota & Usage", ["type"])
@@ -175,11 +175,12 @@ if __name__ == '__main__':
 
     
     while(True):
-        # linodeInstanceTypeCount.clear()
-        # linodeInstanceStatusCount.clear()
-        # linodeNodebalancerCount.clear()
-        # linodeVolumesCount.clear()
-        # linodeTrafficQuota.clear()
+        linodeInstanceTypeCount.clear()
+        linodeInstanceStatusCount.clear()
+        linodeNodebalancerCount.clear()
+        linodeVolumesCount.clear()
+        linodeTrafficQuota.clear()
+        linodeInstanceDetail.clear()
 
 
         try:
@@ -260,7 +261,7 @@ if __name__ == '__main__':
             linodeInstanceStatusCount.labels('running').set(instance_running)
             linodeInstanceStatusCount.labels('notrunning').set(instance_notrunning)
 
-            linodeNodebalancerCount.set(nodebalancer_count)
+            linodeNodebalancerCount.labels('global').set(nodebalancer_count)
 
             linodeVolumesCount.labels('attached').set(volume_active)
             linodeVolumesCount.labels('unattached').set(volume_inactive)
