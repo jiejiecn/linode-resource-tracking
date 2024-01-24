@@ -12,8 +12,9 @@ hostPort = 9001
 hostAddr = "0.0.0.0"
 
 #####################################################################
-storagePrice = 0.00015                  # $/GB/HR
-nodeBalancePrice = 0.015                # $/HR
+storagePrice = 0.00015                  # $/GB/Hour
+nodeBalancePrice = 0.015                # $/Hour
+lkeHAPrice = 0.08333                     # $/Hour
 
 
 
@@ -26,5 +27,7 @@ loadbalance_url = 'https://api.linode.com/v4/nodebalancers'
 volumes_url = 'https://api.linode.com/v4/volumes'
 network_quota_url = 'https://api.linode.com/v4/account/transfer'
 instance_type_url = 'https://api.linode.com/v4/linode/types'
+lke_url = 'https://api.linode.com/v4/lke/clusters'
+
 
 
