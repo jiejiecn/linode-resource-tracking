@@ -183,6 +183,7 @@ if __name__ == '__main__':
     linodeVolumesCount = Gauge("linode_volumes_count", "Linode Block Storage Statistic", ["status"])
     linodeVolumesSize = Gauge("linode_volumes_size", "Linode Block Storage Total GB", ["size"])
     linodeTrafficQuota = Gauge("linode_traffice_quota", "Linode Traffic Quota & Usage", ["type"])
+    linodeRegionTraffic = Gauge("linode_region_traffic", "Region Network Transfer Quota & Usage", ["region", "type"])
     linodeEstimateCost = Gauge("linode_estimate_cost", "Linode Hourly Cost Estimated", ["type"])
     linodeKubernetesDetail = Gauge("linode_kubernetes_engine", "Linode Kubernetes Cluster Info", ["id", "region", "label", "version"])
     
@@ -276,14 +277,21 @@ if __name__ == '__main__':
                     volume_inactive += 1
             
             network_transfer = GetNetworkTransfer()
+            
             network_transfer_usage = network_transfer['used']
             network_transfer_quota = network_transfer['quota']
-            
 
-            # print(instance_count)
-            # print(nodebalancers)
-            # print(volumes)
-            # print(network_transfer)
+            linodeTrafficQuota.labels('used').set(network_transfer_usage)
+            linodeTrafficQuota.labels('quota').set(network_transfer_quota)
+
+            for item in network_transfer['region_transfers']:
+                region = item['id']
+                region_usage = item['used']
+                region_quota = item['quota']
+
+                linodeRegionTraffic.labels(region, 'used').set(region_usage)
+                linodeRegionTraffic.labels(region, 'quota').set(region_quota)
+            
 
             linodeInstanceStatusCount.labels('running').set(instance_running)
             linodeInstanceStatusCount.labels('notrunning').set(instance_notrunning)
@@ -294,8 +302,7 @@ if __name__ == '__main__':
             linodeVolumesCount.labels('unattached').set(volume_inactive)
             linodeVolumesSize.labels('size').set(volume_total)
 
-            linodeTrafficQuota.labels('used').set(network_transfer_usage)
-            linodeTrafficQuota.labels('quota').set(network_transfer_quota)
+            
 
             # Estimated Hourly Price for NodeBalance & Block Storage
             nodeBalanceTotal = nodebalancer_count * config.nodeBalancePrice
