@@ -1,5 +1,8 @@
 # linode-resource-tracking
 
+#### 2024.4.18
+增加Instance Transfer跟踪（开发中，需要mysql）
+
 
 #### 2024.2.29  
 增加region traffic流量统计，雅加达、圣保罗区域流量单独采集、显示 </br>
