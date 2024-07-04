@@ -1,7 +1,7 @@
 import requests, json, time
 import time, random, os, platform
 
-import config,database
+import config
 
 
 
@@ -63,23 +63,23 @@ for item in linode_instances:
     linode_id = item['id']
     traffic = GetInstancTraffic(linode_id)
 
-    print(item, traffic)
+    print(item['label'], traffic)
 
-    record = database.InstanceTraffic()
-    record.linode_id = item['id']
-    record.linode_label = item['label']
-    record.instanceType = item['type']
-    record.dataCenter = item['region']
-    record.publicIp = item['ipv4'][0]
-    record.traffic_usage = traffic['used']
-    record.traffic_usage_GB = record.traffic_usage / 1024 / 1024 / 1024
-    record.traffic_quota = traffic['quota']
-    record.traffic_billable = traffic['billable']
-    record.traffic_billable_GB = record.traffic_billable / 1024 / 1024 / 1024
+    # record = database.InstanceTraffic()
+    # record.linode_id = item['id']
+    # record.linode_label = item['label']
+    # record.instanceType = item['type']
+    # record.dataCenter = item['region']
+    # record.publicIp = item['ipv4'][0]
+    # record.traffic_usage = traffic['used']
+    # record.traffic_usage_GB = record.traffic_usage / 1024 / 1024 / 1024
+    # record.traffic_quota = traffic['quota']
+    # record.traffic_billable = traffic['billable']
+    # record.traffic_billable_GB = record.traffic_billable / 1024 / 1024 / 1024
 
     
 
-    database.db.add(record)
-    database.db.commit()
+    # database.db.add(record)
+    # database.db.commit()
 
 
