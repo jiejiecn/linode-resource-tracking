@@ -1,5 +1,10 @@
 # linode-resource-tracking
 
+#### 2024.7.4
+要跟踪每个instance网络流量，先导入instancetraffic.sql，然后定时执行traffic.py
+建议每10~15分钟执行一次
+
+
 #### 2024.4.18
 增加Instance Transfer跟踪（开发中，需要mysql）
 
