@@ -6,7 +6,7 @@
 
 主要Metric信息如下：
 
-![](./images/image-20240820154613956.png)
+![](../images/image-20240820154613956.png)
 
 
 
@@ -43,7 +43,7 @@ $ pip install requests prometheus-client
 
 Linode云平台生成一份 Personal Access Tokens：
 
-<img src="./images/image-20240820154920132.png")
+<img src="../images/image-20240820154920132.png")
 
 生成结果类似：
 
@@ -142,4 +142,4 @@ $ sudo systemctl enable linode.service
 
 进入Grafana进行图表设置
 
-<img src="./images/image-20240820154142302.png")
+<img src="../images/image-20240820154142302.png")
